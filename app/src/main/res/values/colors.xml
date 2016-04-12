@@ -2,7 +2,8 @@
 <resources>
     <color name="colorPrimary">#F62817</color>
     <color name="colorSecondary">#FDD017</color>
-    <color name="colorButton">#6698FF</color>
+    <color name="colorButton">#747170</color>
+    <color name="colorSearchButton">#6698FF</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 </resources>
