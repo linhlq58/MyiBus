@@ -1,15 +1,18 @@
 package com.example.linhlee.myibus.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.linhlee.myibus.R;
 import com.example.linhlee.myibus.activities.MainActivity;
+import com.example.linhlee.myibus.activities.RouteActivity;
 import com.example.linhlee.myibus.adapters.ListBusAdapter;
 import com.example.linhlee.myibus.database.DataBaseHelper;
 import com.example.linhlee.myibus.objects.BusItem;
@@ -36,16 +39,26 @@ public class MainFragment extends Fragment {
 
         listView = (ListView) rootView.findViewById(R.id.list_bus);
 
-        initArray();
+        initData();
 
         listBusAdapter = new ListBusAdapter((MainActivity)getActivity(), R.layout.list_bus_item, listBusItems);
 
         listView.setAdapter(listBusAdapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent((MainActivity)getActivity(), RouteActivity.class);
+                intent.putExtra("title", listBusItems.get(position).getBusName());
+
+                startActivity(intent);
+            }
+        });
+
         return rootView;
     }
 
-    public void initArray() {
+    public void initData() {
         DataBaseHelper db = new DataBaseHelper((MainActivity)getActivity());
 
         db.addBus(new BusItem(32, "Giáp Bát - Nhổn"));

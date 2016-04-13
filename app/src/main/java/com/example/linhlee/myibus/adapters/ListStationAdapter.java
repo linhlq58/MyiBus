@@ -7,32 +7,32 @@ import android.widget.TextView;
 
 import com.example.linhlee.myibus.R;
 import com.example.linhlee.myibus.activities.MainActivity;
-import com.example.linhlee.myibus.objects.BusItem;
+import com.example.linhlee.myibus.activities.RouteActivity;
 
 import java.util.ArrayList;
 
 /**
- * Created by Linh Lee on 4/11/2016.
+ * Created by Linh Lee on 4/13/2016.
  */
-public class ListBusAdapter extends BaseAdapter {
-    private MainActivity context;
+public class ListStationAdapter extends BaseAdapter {
+    private RouteActivity context;
     private int layout;
-    private ArrayList<BusItem> busItems;
+    private ArrayList<String> listStation;
 
-    public ListBusAdapter(MainActivity context, int layout, ArrayList<BusItem> listBusItems) {
+    public ListStationAdapter(RouteActivity context, int layout, ArrayList<String> listStation) {
         this.context = context;
         this.layout = layout;
-        this.busItems = listBusItems;
+        this.listStation = listStation;
     }
 
     @Override
     public int getCount() {
-        return busItems.size();
+        return listStation.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return busItems.get(position);
+        return listStation.get(position);
     }
 
     @Override
@@ -42,16 +42,13 @@ public class ListBusAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         if (convertView == null) {
             convertView = context.getLayoutInflater().inflate(layout, parent, false);
-
         }
 
-        TextView busNumber = (TextView) convertView.findViewById(R.id.bus_number);
-        TextView busRoute = (TextView) convertView.findViewById(R.id.bus_route);
-
-        busNumber.setText(busItems.get(position).getBusNumber() + "");
-        busRoute.setText(busItems.get(position).getBusName());
+        TextView stationName = (TextView) context.findViewById(R.id.text_station);
+        stationName.setText(listStation.get(position));
 
         return convertView;
     }
