@@ -38,11 +38,11 @@
             android:textAllCaps="false" />
     </RelativeLayout>
 
-    <FrameLayout
+    <fragment
+        android:id="@+id/map_route"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="200dp">
-
-    </FrameLayout>
+        android:layout_height="200dp" />
 
     <Button
         android:id="@+id/btn_redirect"

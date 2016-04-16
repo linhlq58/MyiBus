@@ -60,12 +60,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 + "station_longitude DOUBLE)";
 
         String CREATE_NORMALROUTE_TABLE = "CREATE TABLE IF NOT EXISTS normal_route ("
-                + "nr_id INTEGER PRIMARY KEY AUTO_INCREMENT, "
+                + "nr_id INTEGER PRIMARY KEY, "
                 + "nr_bus_number INTEGER, "
                 + "nr_station_id INTEGER)";
 
         String CREATE_REVERSEROUTE_TABLE = "CREATE TABLE IF NOT EXISTS reverse_route ("
-                + "rr_id INTEGER PRIMARY KEY AUTO_INCREMENT, "
+                + "rr_id INTEGER PRIMARY KEY, "
                 + "rr_bus_number INTEGER, "
                 + "rr_station_id INTEGER)";
 
@@ -210,10 +210,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String query = "SELECT s.station_name FROM normal_route nr JOIN station s "
                 + "ON nr.nr_station_id = s.station_id "
-                + "WHERE nr.nr_bus_number = ? ORDER BY nr.nr_id ASC";
+                + "WHERE nr.nr_bus_number = " + number + " ORDER BY nr.nr_id ASC";
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(number)});
+        Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -221,7 +221,30 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
+        Log.d("getNormalRoute", "success");
+
         return listNormalRouteStation;
+    }
+
+    public ArrayList<String> getReverseRouteStationByBusNumber(int number) {
+        ArrayList<String> listReverseRouteStation = new ArrayList<>();
+
+        String query = "SELECT s.station_name FROM reverse_route rr JOIN station s "
+                + "ON rr.rr_station_id = s.station_id "
+                + "WHERE rr.rr_bus_number = " + number + " ORDER BY rr.rr_id ASC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                listReverseRouteStation.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+
+        Log.d("getReverseRoute", "success");
+
+        return listReverseRouteStation;
     }
 
     public int updateBus(BusItem bus) {
@@ -232,7 +255,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put(KEY_BUS_NAME, bus.getBusName());
 
         int i = db.update(TABLE_BUS, values, KEY_BUS_NUMBER + " = ?",
-                new String[] {String.valueOf(bus.getBusNumber())});
+                new String[]{String.valueOf(bus.getBusNumber())});
 
         db.close();
 
@@ -250,6 +273,38 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         int i = db.update(TABLE_STATION, values, KEY_STATION_ID + " = ?",
                 new String[] {String.valueOf(station.getStationId())});
+
+        db.close();
+
+        return i;
+    }
+
+    public int updateNormalRoute(NormalRouteItem normalRoute) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NR_BUS_NUMBER, normalRoute.getNrBusNumber());
+        values.put(KEY_NR_STATION_ID, normalRoute.getNrStationId());
+
+        int i = db.update(TABLE_NORMALROUTE, values, KEY_NR_BUS_NUMBER + " = ?",
+                new String[] {String.valueOf(normalRoute.getNrBusNumber())});
+
+        db.close();
+
+        return i;
+    }
+
+    public int updateReverseRoute(ReverseRouteItem reverseRoute) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_RR_BUS_NUMBER, reverseRoute.getRrBusNumber());
+        values.put(KEY_RR_STATION_ID, reverseRoute.getRrStationId());
+
+        int i = db.update(TABLE_REVERSEROUTE, values, KEY_RR_BUS_NUMBER + " = ?",
+                new String[] {String.valueOf(reverseRoute.getRrBusNumber())});
 
         db.close();
 

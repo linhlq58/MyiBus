@@ -47,7 +47,7 @@ public class ListStationAdapter extends BaseAdapter {
             convertView = context.getLayoutInflater().inflate(layout, parent, false);
         }
 
-        TextView stationName = (TextView) context.findViewById(R.id.text_station);
+        TextView stationName = (TextView) convertView.findViewById(R.id.text_station);
         stationName.setText(listStation.get(position));
 
         return convertView;
