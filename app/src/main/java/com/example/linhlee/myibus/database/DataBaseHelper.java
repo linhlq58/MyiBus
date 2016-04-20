@@ -50,7 +50,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_BUS_TABLE = "CREATE TABLE IF NOT EXISTS bus ("
-                + "bus_number INTEGER PRIMARY KEY, "
+                + "bus_id INTEGER PRIMARY KEY, "
+                + "bus_number TEXT, "
                 + "bus_name TEXT)";
 
         String CREATE_STATION_TABLE = "CREATE TABLE IF NOT EXISTS station ("
@@ -143,7 +144,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public BusItem getBus(int number) {
+    public BusItem getBus(String number) {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -154,8 +155,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             cursor.moveToFirst();
 
         BusItem bus = new BusItem();
-        bus.setBusNumber(cursor.getInt(0));
-        bus.setBusName(cursor.getString(1));
+        bus.setBusNumber(cursor.getString(1));
+        bus.setBusName(cursor.getString(2));
 
         Log.d("getBus(" + number + ")", bus.toString());
 
@@ -181,6 +182,28 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return station;
     }
 
+    public double[] getStationLatLngByName(String name) {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_STATION, STATION_COLUMNS, "station_name = ?",
+                new String[] {String.valueOf(name)}, null, null, null, null);
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        StationItem station = new StationItem();
+        station.setStationId(cursor.getInt(0));
+        station.setStationName(cursor.getString(1));
+        station.setStationLatitude(cursor.getDouble(2));
+        station.setStationLongitude(cursor.getDouble(3));
+
+        double[] stationLatLng = {station.getStationLatitude(), station.getStationLongitude()};
+
+        return stationLatLng;
+
+    }
+
     public ArrayList<BusItem> getAllBus() {
         ArrayList<BusItem> listBus = new ArrayList<>();
 
@@ -193,8 +216,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 bus = new BusItem();
-                bus.setBusNumber(cursor.getInt(0));
-                bus.setBusName(cursor.getString(1));
+                bus.setBusNumber(cursor.getString(1));
+                bus.setBusName(cursor.getString(2));
 
                 listBus.add(bus);
             } while (cursor.moveToNext());
@@ -205,12 +228,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return listBus;
     }
 
-    public ArrayList<String> getNormalRouteStationByBusNumber(int number) {
+    public ArrayList<String> getNormalRouteStationByBusNumber(String number) {
         ArrayList<String> listNormalRouteStation = new ArrayList<>();
 
         String query = "SELECT s.station_name FROM normal_route nr JOIN station s "
                 + "ON nr.nr_station_id = s.station_id "
-                + "WHERE nr.nr_bus_number = " + number + " ORDER BY nr.nr_id ASC";
+                + "WHERE nr.nr_bus_number = '" + number + "' ORDER BY nr.nr_id ASC";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -226,12 +249,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return listNormalRouteStation;
     }
 
-    public ArrayList<String> getReverseRouteStationByBusNumber(int number) {
+    public ArrayList<String> getReverseRouteStationByBusNumber(String number) {
         ArrayList<String> listReverseRouteStation = new ArrayList<>();
 
         String query = "SELECT s.station_name FROM reverse_route rr JOIN station s "
                 + "ON rr.rr_station_id = s.station_id "
-                + "WHERE rr.rr_bus_number = " + number + " ORDER BY rr.rr_id ASC";
+                + "WHERE rr.rr_bus_number = '" + number + "' ORDER BY rr.rr_id ASC";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);

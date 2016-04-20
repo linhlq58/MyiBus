@@ -75,7 +75,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         LatLngBounds.Builder boundsBuilder = LatLngBounds.builder().include(GiapBatStation).include(otherLocation);
         myMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 60));
 
-
     }
 
     private class ParseXML extends AsyncTask<Void, Void, Document> {

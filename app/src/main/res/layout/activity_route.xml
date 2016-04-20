@@ -23,6 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:ellipsize="end"
             android:text="iBus"
             android:textColor="@android:color/white"
             android:textSize="20sp"
@@ -30,12 +31,15 @@
 
         <Button
             android:id="@+id/btn_about_route"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/about_btn_background"
             android:text="i"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:textStyle="italic" />
     </RelativeLayout>
 
     <fragment
@@ -44,21 +48,39 @@
         android:layout_width="match_parent"
         android:layout_height="200dp" />
 
-    <Button
-        android:id="@+id/btn_redirect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Đổi chiều"
-        android:textAllCaps="false"
-        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_redirect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="Đổi chiều"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="Xóa"
+            android:textAllCaps="false" />
+
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/list_station"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorSecondary"
+        android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
-        android:padding="2dp">
+        android:dividerHeight="4dp"
+        android:focusable="true"
+        android:padding="4dp">
 
     </ListView>
 

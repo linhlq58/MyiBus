@@ -6,13 +6,13 @@ import java.util.ArrayList;
  * Created by Linh Lee on 4/11/2016.
  */
 public class BusItem {
-    private int busNumber;
+    private String busNumber;
     private String busName;
 
     private ArrayList<String> normalRoute;
     private ArrayList<String> reverseRoute;
 
-    public BusItem(int busNumber, String busName) {
+    public BusItem(String busNumber, String busName) {
         this.busNumber = busNumber;
         this.busName = busName;
     }
@@ -21,11 +21,11 @@ public class BusItem {
         super();
     }
 
-    public int getBusNumber() {
+    public String getBusNumber() {
         return busNumber;
     }
 
-    public void setBusNumber(int busNumber) {
+    public void setBusNumber(String busNumber) {
         this.busNumber = busNumber;
     }
 

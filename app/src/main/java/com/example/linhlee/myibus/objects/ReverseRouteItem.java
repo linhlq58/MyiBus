@@ -4,10 +4,10 @@ package com.example.linhlee.myibus.objects;
  * Created by Linh Lee on 4/13/2016.
  */
 public class ReverseRouteItem {
-    private int rrBusNumber;
+    private String rrBusNumber;
     private int rrStationId;
 
-    public ReverseRouteItem(int rrBusNumber, int rrStationId) {
+    public ReverseRouteItem(String rrBusNumber, int rrStationId) {
         this.rrBusNumber = rrBusNumber;
         this.rrStationId = rrStationId;
     }
@@ -16,11 +16,11 @@ public class ReverseRouteItem {
         super();
     }
 
-    public int getRrBusNumber() {
+    public String getRrBusNumber() {
         return rrBusNumber;
     }
 
-    public void setRrBusNumber(int rrBusNumber) {
+    public void setRrBusNumber(String rrBusNumber) {
         this.rrBusNumber = rrBusNumber;
     }
 

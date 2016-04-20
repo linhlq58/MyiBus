@@ -4,10 +4,10 @@ package com.example.linhlee.myibus.objects;
  * Created by Linh Lee on 4/13/2016.
  */
 public class NormalRouteItem {
-    private int nrBusNumber;
+    private String nrBusNumber;
     private int nrStationId;
 
-    public NormalRouteItem(int nrBusNumber, int nrStationId) {
+    public NormalRouteItem(String nrBusNumber, int nrStationId) {
         this.nrBusNumber = nrBusNumber;
         this.nrStationId = nrStationId;
     }
@@ -16,11 +16,11 @@ public class NormalRouteItem {
         super();
     }
 
-    public int getNrBusNumber() {
+    public String getNrBusNumber() {
         return nrBusNumber;
     }
 
-    public void setNrBusNumber(int nrBusNumber) {
+    public void setNrBusNumber(String nrBusNumber) {
         this.nrBusNumber = nrBusNumber;
     }
 

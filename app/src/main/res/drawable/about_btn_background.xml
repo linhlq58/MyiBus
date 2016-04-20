@@ -5,12 +5,8 @@
     <gradient
         android:angle="270"></gradient>
 
-    <solid android:color="@color/colorPrimary">
+    <solid android:color="@color/colorButton">
 
     </solid>
-
-    <size
-        android:width="28dp"
-        android:height="32dp"></size>
 
 </shape>
