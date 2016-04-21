@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -16,9 +17,11 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.example.linhlee.myibus.R;
+import com.example.linhlee.myibus.activities.AboutActivity;
 import com.example.linhlee.myibus.activities.MainActivity;
 import com.example.linhlee.myibus.activities.RouteActivity;
 import com.example.linhlee.myibus.adapters.ListBusAdapter;
@@ -38,10 +41,10 @@ public class MainFragment extends Fragment {
     private ListBusAdapter listBusAdapter;
     private ArrayList<BusItem> listBusItems;
 
-    private ArrayList<String> arrayReferenceString;
-
     private EditText searchText;
     private Button searchButton;
+    private Button cityButton;
+    private Button aboutButton;
 
     private DataBaseHelper db;
 
@@ -57,7 +60,10 @@ public class MainFragment extends Fragment {
 
         searchText = (EditText) rootView.findViewById(R.id.search_text);
         searchButton = (Button) rootView.findViewById(R.id.btn_search);
+        cityButton = (Button) rootView.findViewById(R.id.btn_city);
+        aboutButton = (Button) rootView.findViewById(R.id.btn_about_main);
         listView = (ListView) rootView.findViewById(R.id.list_bus);
+        cityButton.setText("HN");
 
         getActivity().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
@@ -70,13 +76,6 @@ public class MainFragment extends Fragment {
             listBusItems.get(i).setReverseRoute(db.getReverseRouteStationByBusNumber(listBusItems.get(i).getBusNumber()));
         }
 
-        arrayReferenceString = new ArrayList<>();
-        for (int i=0;i<listBusItems.size();i++) {
-            arrayReferenceString.add(listBusItems.get(i).getBusNumber()
-                    + " " + listBusItems.get(i).getBusName());
-            arrayReferenceString.get(0).toLowerCase();
-        }
-
         listBusAdapter = new ListBusAdapter((MainActivity) getActivity(), R.layout.list_bus_item, listBusItems);
 
         listView.setAdapter(listBusAdapter);
@@ -84,11 +83,49 @@ public class MainFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent((MainActivity) getActivity(), RouteActivity.class);
+                Intent intent = new Intent(getContext(), RouteActivity.class);
                 intent.putExtra("title", ((BusItem) listBusAdapter.getItem(position)).getBusName());
                 intent.putExtra("listNormalRoute", ((BusItem) listBusAdapter.getItem(position)).getNormalRoute());
                 intent.putExtra("listReverseRoute", ((BusItem) listBusAdapter.getItem(position)).getReverseRoute());
 
+                startActivity(intent);
+            }
+        });
+
+        cityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(getContext(), cityButton);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Toast.makeText(getActivity(), "Clicked " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                        int id = item.getItemId();
+                        switch (id) {
+                            case R.id.hanoi:
+                                cityButton.setText("HN");
+                                return true;
+                            case R.id.danang:
+                                cityButton.setText("ĐN");
+                                return true;
+                            case R.id.tphcm:
+                                cityButton.setText("HCM");
+                                return true;
+                        }
+                        return false;
+                    }
+                });
+
+                popupMenu.show();
+            }
+        });
+
+        aboutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), AboutActivity.class);
                 startActivity(intent);
             }
         });

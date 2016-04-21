@@ -11,12 +11,11 @@
         android:background="@color/colorPrimary">
 
         <Button
-            android:id="@+id/btn_location"
+            android:id="@+id/btn_city"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:text="HN" />
+            android:layout_centerVertical="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -37,7 +36,7 @@
             android:background="@drawable/about_btn_background"
             android:text="i"
             android:textAllCaps="false"
-            android:textStyle="italic" />
+            android:textStyle="italic|bold" />
     </RelativeLayout>
 
     <LinearLayout

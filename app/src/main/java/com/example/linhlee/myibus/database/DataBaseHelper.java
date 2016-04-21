@@ -51,7 +51,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_BUS_TABLE = "CREATE TABLE IF NOT EXISTS bus ("
                 + "bus_id INTEGER PRIMARY KEY, "
-                + "bus_number TEXT, "
+                + "bus_number TEXT UNIQUE, "
                 + "bus_name TEXT)";
 
         String CREATE_STATION_TABLE = "CREATE TABLE IF NOT EXISTS station ("
@@ -63,12 +63,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String CREATE_NORMALROUTE_TABLE = "CREATE TABLE IF NOT EXISTS normal_route ("
                 + "nr_id INTEGER PRIMARY KEY, "
                 + "nr_bus_number INTEGER, "
-                + "nr_station_id INTEGER)";
+                + "nr_station_id INTEGER, "
+                + "UNIQUE(nr_bus_number, nr_station_id) ON CONFLICT REPLACE)";
 
         String CREATE_REVERSEROUTE_TABLE = "CREATE TABLE IF NOT EXISTS reverse_route ("
                 + "rr_id INTEGER PRIMARY KEY, "
                 + "rr_bus_number INTEGER, "
-                + "rr_station_id INTEGER)";
+                + "rr_station_id INTEGER, "
+                + "UNIQUE(rr_bus_number, rr_station_id) ON CONFLICT REPLACE)";
 
         db.execSQL(CREATE_BUS_TABLE);
         db.execSQL(CREATE_STATION_TABLE);

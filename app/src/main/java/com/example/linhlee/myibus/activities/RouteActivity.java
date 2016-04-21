@@ -2,15 +2,15 @@ package com.example.linhlee.myibus.activities;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -31,18 +31,17 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Linh Lee on 4/13/2016.
  */
-public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private String titleName;
     private ArrayList<String> listNormalRoute;
@@ -50,6 +49,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private TextView title;
     private ImageView backButton;
+    private Button aboutButton;
     private Button redirectButton;
     private Button deleteButton;
 
@@ -60,8 +60,9 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     private String stationSelected = null;
 
     private GoogleMap myMap;
+    private Polyline myPolyline;
     private GMapV2Direction md;
-
+    private LatLng startLocation, endLocation;
     private DataBaseHelper db = new DataBaseHelper(this);
 
     @Override
@@ -75,6 +76,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
         title = (TextView) findViewById(R.id.text_title);
         backButton = (ImageView) findViewById(R.id.btn_back);
+        aboutButton = (Button) findViewById(R.id.btn_about_route);
         redirectButton = (Button) findViewById(R.id.btn_redirect);
         deleteButton = (Button) findViewById(R.id.btn_delete);
         listStation = (ListView) findViewById(R.id.list_station);
@@ -94,23 +96,42 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
+        aboutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RouteActivity.this, AboutActivity.class);
+                startActivity(intent);
+            }
+        });
+
         listStationAdapter = new ListStationAdapter(this, R.layout.list_station_item, listNormalRoute);
         listStation.setAdapter(listStationAdapter);
 
         redirectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (normalDirect) {
-                    normalDirect = false;
-                    Toast.makeText(RouteActivity.this, "Ngược", Toast.LENGTH_SHORT).show();
-                    listStationAdapter = new ListStationAdapter(RouteActivity.this, R.layout.list_station_item, listReverseRoute);
-                    listStation.setAdapter(listStationAdapter);
-                } else {
-                    normalDirect = true;
-                    Toast.makeText(RouteActivity.this, "Xuôi", Toast.LENGTH_SHORT).show();
-                    listStationAdapter = new ListStationAdapter(RouteActivity.this, R.layout.list_station_item, listNormalRoute);
-                    listStation.setAdapter(listStationAdapter);
-                }
+                myMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                    @Override
+                    public void onMapLoaded() {
+                        if (normalDirect) {
+                            normalDirect = false;
+                            Toast.makeText(RouteActivity.this, "Ngược", Toast.LENGTH_SHORT).show();
+                            listStationAdapter = new ListStationAdapter(RouteActivity.this, R.layout.list_station_item, listReverseRoute);
+                            listStation.setAdapter(listStationAdapter);
+
+                            myPolyline.remove();
+                            new ParseXML().execute();
+                        } else {
+                            normalDirect = true;
+                            Toast.makeText(RouteActivity.this, "Xuôi", Toast.LENGTH_SHORT).show();
+                            listStationAdapter = new ListStationAdapter(RouteActivity.this, R.layout.list_station_item, listNormalRoute);
+                            listStation.setAdapter(listStationAdapter);
+
+                            myPolyline.remove();
+                            new ParseXML().execute();
+                        }
+                    }
+                });
 
             }
         });
@@ -143,20 +164,22 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         startLatLng = db.getStationLatLngByName(listNormalRoute.get(0));
         endLatLng = db.getStationLatLngByName(listNormalRoute.get(listNormalRoute.size() - 1));
 
-        LatLng startLocation = new LatLng(startLatLng[0], startLatLng[1]);
-        LatLng endLocation = new LatLng(endLatLng[0], endLatLng[1]);
+        startLocation = new LatLng(startLatLng[0], startLatLng[1]);
+        endLocation = new LatLng(endLatLng[0], endLatLng[1]);
 
+        //Đánh dấu điểm đầu, điểm cuối bằng marker
         myMap.addMarker(new MarkerOptions()
                 .position(startLocation)
-                .title("Điểm đầu")
+                .title(listNormalRoute.get(0) + "")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         myMap.addMarker(new MarkerOptions()
                 .position(endLocation)
-                .title("Điểm cuối"));
+                .title(listNormalRoute.get(listNormalRoute.size() - 1) + ""));
 
-        for (int i = 1;i < listNormalRoute.size() - 1;i++) {
+        //Đánh dấu các điểm dừng bằng cờ
+        for (int i = 1; i < listStationAdapter.getCount() - 1; i++) {
             double[] locationLatLng;
-            locationLatLng = db.getStationLatLngByName(listNormalRoute.get(i));
+            locationLatLng = db.getStationLatLngByName((String) listStationAdapter.getItem(i));
             LatLng location = new LatLng(locationLatLng[0], locationLatLng[1]);
 
             myMap.addMarker(new MarkerOptions()
@@ -174,13 +197,12 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             @Override
             public void onMapLoaded() {
                 myMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 60));
+
                 myMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
                     @Override
                     public void onMyLocationChange(Location location) {
-                        //LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
                         if (stationSelected != null) {
                             double[] arrLatLng = db.getStationLatLngByName(stationSelected);
-                            //LatLng stationTargetLatLng = new LatLng(arrLatLng[0], arrLatLng[1]);
                             Location stationTarget = new Location("target");
                             stationTarget.setLatitude(arrLatLng[0]);
                             stationTarget.setLongitude(arrLatLng[1]);
@@ -208,7 +230,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_bus_white)
                 .setContentTitle("Sắp đến điểm dừng")
-                .setContentText("Sắp đến rồi, xuống nhanh lên còn kịp")
+                .setContentText("Sắp đến " + stationSelected + " rồi, xuống nhanh lên còn kịp")
                 .setSound(alarmSound);
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -228,20 +250,20 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                     .color(Color.BLUE);
 
             ArrayList<LatLng> listLatLng = new ArrayList<>();
-            for (int i = 0;i < listNormalRoute.size();i++) {
+            for (int i = 0; i < listStationAdapter.getCount(); i++) {
                 double[] locationLatLng;
-                locationLatLng = db.getStationLatLngByName(listNormalRoute.get(i));
+                locationLatLng = db.getStationLatLngByName((String) listStationAdapter.getItem(i));
                 LatLng location = new LatLng(locationLatLng[0], locationLatLng[1]);
 
                 listLatLng.add(location);
             }
 
-            for (int i = 0;i < listLatLng.size() - 1;i++) {
-                doc = md.getDocument(listLatLng.get(i), listLatLng.get(i+1),
+            for (int i = 0; i < listLatLng.size() - 1; i++) {
+                doc = md.getDocument(listLatLng.get(i), listLatLng.get(i + 1),
                         GMapV2Direction.MODE_DRIVING);
                 ArrayList<LatLng> directionPoint = md.getDirection(doc);
 
-                for (int j = 0;j < directionPoint.size();j++) {
+                for (int j = 0; j < directionPoint.size(); j++) {
                     rectLine.add(directionPoint.get(j));
                 }
 
@@ -253,7 +275,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
         @Override
         protected void onPostExecute(Document result) {
-            myMap.addPolyline(rectLine);
+            myPolyline = myMap.addPolyline(rectLine);
         }
 
     }

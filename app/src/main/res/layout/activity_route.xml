@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:ellipsize="end"
-            android:text="iBus"
+            android:text="Tên tuyến"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -39,7 +39,7 @@
             android:background="@drawable/about_btn_background"
             android:text="i"
             android:textAllCaps="false"
-            android:textStyle="italic" />
+            android:textStyle="italic|bold" />
     </RelativeLayout>
 
     <fragment
