@@ -2,14 +2,18 @@ package com.example.linhlee.myibus.activities;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.media.RingtoneManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -72,7 +76,11 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
         SupportMapFragment mapFragment = (SupportMapFragment)
                 getSupportFragmentManager().findFragmentById(R.id.map_route);
-        mapFragment.getMapAsync(this);
+        if (isOnline()) {
+            mapFragment.getMapAsync(this);
+        } else {
+            showDialog();
+        }
 
         title = (TextView) findViewById(R.id.text_title);
         backButton = (ImageView) findViewById(R.id.btn_back);
@@ -278,6 +286,26 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             myPolyline = myMap.addPolyline(rectLine);
         }
 
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public void showDialog() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Warning");
+        dialog.setMessage("Chức năng này yêu cầu kết nối Internet. Bật Wifi hoặc Mobile data trước khi sử dụng.");
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
 }
